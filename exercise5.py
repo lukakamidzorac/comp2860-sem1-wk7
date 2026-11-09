@@ -1,6 +1,6 @@
 class VigenereCipher:
     """
-       VigenereCipher class (TO BE COMPLETED).
+       VigenereCipher class.
 
        Attributes:
            keyword (str): The word to be used as the key
@@ -14,11 +14,7 @@ class VigenereCipher:
 
     def __shift_letter(self, letter: str, shift: int, forward: bool):
         """
-        TO BE COMPLETED
-
         Private method to shift a letter a number of positions forward or backward in the alphabet.
-
-        YOU CAN REUSE YOUR METHOD FROM EXERCISE 1 WITH MINOR MODIFICATIONS
 
         Parameters
         ----------
@@ -34,19 +30,16 @@ class VigenereCipher:
         str
             The shifted letter.
         """
-        shifted_letter = ''
+        if not forward:
+            shift = -shift
+        position = ord(letter) - VigenereCipher.offset
+        shifted_letter = chr((position + shift) % 26 + VigenereCipher.offset)
         return shifted_letter
 
     def __generate_shift_list(self, plaintext_length: int):
         """
-        TO BE COMPLETED
-
         Private method to generate a list of integers. Each element is the shift to encrypt the
         plaintext letter at the same position.
-
-        Remember that the Vigenere cipher uses the keyword, repeated as many times as required to
-        have the same number of letters as the plaintext, to derive the shift values for each
-        plaintext letter.
 
         Parameters
         ----------
@@ -59,18 +52,14 @@ class VigenereCipher:
             A list of shifts (integers).
         """
         shift_list = []
+        for i in range(plaintext_length):
+            key_letter = self.keyword[i % len(self.keyword)]
+            shift_list.append(ord(key_letter) - VigenereCipher.offset)
         return shift_list
 
     def encrypt(self, plaintext: str):
         """
-        TO BE COMPLETED
-
         Encrypts a plaintext string.
-        It should:
-            1. Convert lowercase input to uppercase
-            2. Remove whitespace and punctuation from the input
-            3. Use self.__generate_shift_list to create the list of shifts for each letter in the plaintext
-            4. Use self.__shift_letter to encrypt an individual letter
 
         Parameters
         ----------
@@ -82,22 +71,16 @@ class VigenereCipher:
         str
             The ciphertext string.
         """
+        letters = ''.join(c for c in plaintext.upper() if c.isalpha())
+        shift_list = self.__generate_shift_list(len(letters))
         ciphertext = ''
+        for i in range(len(letters)):
+            ciphertext += self.__shift_letter(letters[i], shift_list[i], True)
         return ciphertext
 
     def decrypt(self, ciphertext: str):
         """
-        TO BE COMPLETED
-
         Decrypts a ciphertext string
-        It should:
-            1. Convert lowercase input to uppercase
-            2. Remove whitespace and punctuation from the input
-            3. Use self.__generate_shift_list to create the list of shifts for each letter in the plaintext
-            4. Use self.__shift_letter to decrypt an individual letter
-
-        HINT: You can use the list index notation to retrieve a character at a position in a string
-        e.g., if string = "abacab" then string[2] = 'a' (3rd character in the string)
 
         Parameters
         ----------
@@ -109,7 +92,11 @@ class VigenereCipher:
         str
             The plaintext string.
         """
+        letters = ''.join(c for c in ciphertext.upper() if c.isalpha())
+        shift_list = self.__generate_shift_list(len(letters))
         plaintext = ''
+        for i in range(len(letters)):
+            plaintext += self.__shift_letter(letters[i], shift_list[i], False)
         return plaintext
 
 
